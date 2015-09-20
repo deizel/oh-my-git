@@ -72,6 +72,18 @@ function build_prompt {
             local upstream=$(git rev-parse --symbolic-full-name --abbrev-ref @{upstream} 2> /dev/null)
             if [[ -n "${upstream}" && "${upstream}" != "@{upstream}" ]]; then local has_upstream=true; fi
 
+	    #
+	    # show remote URL
+
+	    local my_branch="$(git name-rev --name-only HEAD 2> /dev/null)"
+	    local my_remote="$(git config branch.${my_branch}.remote 2> /dev/null)"
+	    local my_remote_url="$(git config remote.${my_remote}.url 2> /dev/null)"
+	    local my_remote_url_stripped="$(echo ${my_remote_url} | sed 's/^git@//' | sed 's/^git\.//' | sed 's/\.git$//')"
+	    upstream+=" on ${my_remote_url_stripped}"
+
+	    # /show remote URL
+	    #
+
             local git_status="$(git status --porcelain 2> /dev/null)"
             local action="$(get_current_action)"
 
